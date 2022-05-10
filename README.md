@@ -1,4 +1,5 @@
 # ones-hijacker
+ONES Hijacker Proxy的浏览器插件，详见仓库`https://github.com/jasper-zsh/ones-hijacker-proxy`
 
 ## Project setup
 ```
