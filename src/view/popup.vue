@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage, ElNotification } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 
 const instances = ref()

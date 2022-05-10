@@ -2,7 +2,18 @@
     <el-dialog v-model="visible">
         <el-form label-width="80px">
             <el-form-item label="地址">
-                <el-input v-model="instance.base_url" />
+                <el-input v-model="instance.base_url">
+                  <template #prepend>
+                    <el-dropdown split-button>
+                      快速生成
+                      <template #dropdown>
+                        <el-dropdown-menu>
+                          <el-dropdown-item @click="urlByBranch">分支名</el-dropdown-item>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
+                  </template>
+                </el-input>
             </el-form-item>
             <el-form-item label="备注">
                 <el-input v-model="instance.note" />
@@ -16,6 +27,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessageBox } from 'element-plus'
 import { defineExpose, ref, defineEmits } from 'vue'
 
 const visible = ref(false)
@@ -46,6 +58,13 @@ const submit = () => {
       emit('submit', res)
     })
   }
+}
+
+const urlByBranch = () => {
+  ElMessageBox.prompt('请输入分支名', '快速生成').then(({ value }) => {
+    instance.value.base_url = `https://dev.myones.net/project/${value}/api/project`
+    instance.value.note = `DEV Branch ${value}`
+  })
 }
 
 defineExpose({

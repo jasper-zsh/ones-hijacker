@@ -1,10 +1,15 @@
 {
     "manifest_version": 3,
-    "name": "ones-hijacker",
-    "description": "chrome extension",
+    "name": "ONES Hijacker",
+    "description": "拦截DEV环境API请求并指向任意位置，需搭配ONES Hijacker Proxy使用。详见https://github.com/jasper-zsh/ones-hijacker-proxy",
     "version": "0.0.1",
     "background": {
         "service_worker": "/background.js"
+    },
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
     },
     "action": {
         "default_popup": "popup.html"
