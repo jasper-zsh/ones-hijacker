@@ -1,7 +1,42 @@
 import { Method } from 'axios'
 import http from '../lib/http'
 
+let currentStatus: any = null
+
+const updateStatus = (status: any) => {
+  currentStatus = status
+  chrome.tabs.query({}, result => {
+    for (const tab of result) {
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: 'statusUpdated',
+          data: status
+        })
+      }
+    }
+  })
+}
+
 const commands: {[k: string]:any} = {
+  checkStatus (sendResponse: any) {
+    console.log('checking status')
+    if (currentStatus == null) {
+      request('GET', '/status', null, res => {
+        console.log('checkStatus got status', res)
+        currentStatus = res
+        sendResponse(res)
+      })
+    } else {
+      console.log('currentStatus is not null')
+      sendResponse(currentStatus)
+    }
+  },
+  loadStatus (sendResponse: any) {
+    request('GET', '/status', null, res => {
+      sendResponse(res)
+      updateStatus(res)
+    })
+  },
   loadInstances (sendResponse: any) {
     request('GET', '/instances', null, sendResponse)
   },
@@ -9,7 +44,10 @@ const commands: {[k: string]:any} = {
     request('DELETE', `/instances/${id}`, null, sendResponse)
   },
   selectInstance (id: any, sendResponse: any) {
-    request('POST', `/instances/${id}/select`, null, sendResponse)
+    request('POST', `/instances/${id}/select`, null, res => {
+      sendResponse(res)
+      updateStatus(res)
+    })
   },
   createInstance (instance: any, sendResponse: any) {
     request('POST', '/instances', instance, sendResponse)
@@ -17,10 +55,6 @@ const commands: {[k: string]:any} = {
   updateInstance (id: any, instance: any, sendResponse: any) {
     request('POST', `/instances/${id}`, instance, sendResponse)
   },
-  loadStatus (sendResponse: any) {
-    request('GET', '/status', null, sendResponse)
-  },
-
   loadAccounts (sendResponse: any) {
     request('GET', '/accounts', null, sendResponse)
   },
@@ -34,15 +68,28 @@ const commands: {[k: string]:any} = {
     request('POST', `/accounts/${id}`, account, sendResponse)
   },
   selectAccount (id: any, sendResponse: any) {
-    request('POST', `/accounts/${id}/select`, null, sendResponse)
+    request('POST', `/accounts/${id}/select`, null, res => {
+      sendResponse(res)
+      updateStatus(res)
+    })
   }
 }
 
 async function request (method: Method, url: string, data: any, sendResponse: (res: any) => void) {
   try {
+    // const opts: RequestInit = {
+    //   method
+    // }
+    // if (['POST', 'PUT'].indexOf(method) >= 0) {
+    //   opts.body = JSON.stringify(data)
+    //   opts.headers = {
+    //     'content-type': 'application/json'
+    //   }
+    // }
+    // const res = await fetch(url, opts)
     const res = await http.request({
-      method,
       url,
+      method,
       data
     })
     if (res.status !== 200) {
@@ -50,6 +97,7 @@ async function request (method: Method, url: string, data: any, sendResponse: (r
       sendResponse(null)
       return
     }
+    console.log('[Request] got response', res.data)
     sendResponse(res.data)
   } catch (e) {
     console.error('error: ', e)

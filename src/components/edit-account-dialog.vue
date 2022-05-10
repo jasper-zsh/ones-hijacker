@@ -34,7 +34,7 @@ const submit = () => {
   if (account.value.ID) {
     chrome.runtime.sendMessage({
       command: 'updateAccount',
-      args: [account.value.ID, account]
+      args: [account.value.ID, account.value]
     }, res => {
       visible.value = false
       emit('submit', res)
@@ -42,7 +42,7 @@ const submit = () => {
   } else {
     chrome.runtime.sendMessage({
       command: 'createAccount',
-      args: [account]
+      args: [account.value]
     }, res => {
       visible.value = false
       emit('submit', res)

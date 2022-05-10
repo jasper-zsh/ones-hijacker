@@ -23,7 +23,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <edit-account-dialog ref="editDialog" />
+        <edit-account-dialog ref="editDialog" @submit="loadAccounts" />
     </div>
 </template>
 

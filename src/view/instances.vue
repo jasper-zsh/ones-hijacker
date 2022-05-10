@@ -22,7 +22,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <EditInstanceDialog ref="editDialog" />
+        <EditInstanceDialog ref="editDialog" @submit="loadInstances" />
     </div>
 </template>
 
