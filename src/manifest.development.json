@@ -2,6 +2,9 @@
     "manifest_version": 3,
     "name": "ONES Hijacker",
     "description": "拦截DEV环境API请求并指向任意位置，需搭配ONES Hijacker Proxy使用。详见https://github.com/jasper-zsh/ones-hijacker-proxy",
+    "permissions": [
+        "proxy"
+    ],
     "version": "0.0.1",
     "background": {
         "service_worker": "/background.js"

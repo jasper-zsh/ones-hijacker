@@ -1,28 +1,23 @@
 <template>
     <div class="instances-tab">
-        <el-table :data="instances">
-            <el-table-column prop="ID" label="ID" />
-            <el-table-column prop="base_url" label="地址" />
-            <el-table-column prop="note" label="备注" />
-            <el-table-column>
-                <template #header>
-                    <el-button size="small" type="success" @click="createInstance">新建</el-button>
-                </template>
-                <template #default="scope">
-                    <el-button size="small" @click="editInstance(scope.row)">编辑</el-button>
-                    <el-popconfirm
-                        title="确认要删除吗？"
-                        confirm-button-type="danger"
-                        @confirm="deleteInstance(scope.row.ID)"
-                    >
-                        <template #reference>
-                            <el-button size="small" type="danger">删除</el-button>
-                        </template>
-                    </el-popconfirm>
-                </template>
-            </el-table-column>
-        </el-table>
-        <EditInstanceDialog ref="editDialog" @submit="loadInstances" />
+      <el-button type="success" @click="createInstance">新建</el-button>
+      <el-row :gutter="12">
+        <el-col :span="6" v-for="instance in instances" :key="instance.ID">
+          <el-card>
+            <el-descriptions :column="2">
+              <el-descriptions-item label="ID">{{instance.ID}}</el-descriptions-item>
+              <el-descriptions-item label="模式">{{instance.mode}}</el-descriptions-item>
+              <el-descriptions-item v-if="instance.mode === 'URL'" label="Project" :span="2">{{instance.project}}</el-descriptions-item>
+              <el-descriptions-item v-if="instance.mode === 'URL'" label="Wiki" :span="2">{{instance.wiki}}</el-descriptions-item>
+              <el-descriptions-item v-if="instance.mode === 'DEV'" label="分支名" :span="2">{{instance.project}}</el-descriptions-item>
+              <el-descriptions-item v-if="instance.mode === 'STANDALONE'" label="地址" :span="2">{{instance.project}}</el-descriptions-item>
+              <el-descriptions-item label="备注" :span="2">{{instance.note}}</el-descriptions-item>
+            </el-descriptions>
+            <el-button type="danger" @click="deleteInstance">删除</el-button>
+          </el-card>
+        </el-col>
+      </el-row>
+      <EditInstanceDialog ref="editDialog" @submit="loadInstances" />
     </div>
 </template>
 

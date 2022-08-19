@@ -18,6 +18,42 @@ const updateStatus = (status: any) => {
 }
 
 const commands: {[k: string]:any} = {
+  proxyStatus (sendResponse: any) {
+    chrome.proxy.settings.get({}, config => {
+      sendResponse(config.value.mode !== 'system')
+    })
+  },
+  enableProxy (sendResponse: any) {
+    chrome.proxy.settings.set({
+      value: {
+        mode: 'fixed_servers',
+        rules: {
+          singleProxy: {
+            scheme: 'http',
+            host: '127.0.0.1',
+            port: 6789
+          }
+        }
+      },
+      scope: 'regular'
+    }, () => {
+      console.log('proxy enabled')
+      sendResponse()
+      updateStatus(currentStatus)
+    })
+  },
+  disableProxy (sendResponse: any) {
+    chrome.proxy.settings.set({
+      value: {
+        mode: 'system'
+      },
+      scope: 'regular'
+    }, () => {
+      console.log('proxy disabled')
+      sendResponse()
+      updateStatus(currentStatus)
+    })
+  },
   checkStatus (sendResponse: any) {
     console.log('checking status')
     if (currentStatus == null) {

@@ -2,26 +2,24 @@
   <div class="main_app" v-loading="loading">
     <el-image class="fun-img" :src="require('../assets/fun.png')" />
     <div class="body">
+      <el-switch v-model="proxyEnabled" active-text="开启代理" />
       <el-form class="select-form" label-width="80px">
         <el-form-item label="服务">
-          <el-select v-model="currentInstance" @change="selectInstance">
-            <el-option
-              v-for="instance in instances"
-              :key="instance.ID"
-              :label="instance.note"
-              :value="instance.ID"
-            ></el-option>
-          </el-select>
+          <el-select-v2
+            v-model="currentInstance"
+            @change="selectInstance"
+            :options="instanceOptions()"
+            :height="150"
+            style="width: 250px"
+          />
         </el-form-item>
         <el-form-item label="账号">
-          <el-select v-model="currentAccount" @change="selectAccount">
-            <el-option
-              v-for="account in accounts"
-              :key="account.ID"
-              :label="accountName(account)"
-              :value="account.ID"
-            />
-          </el-select>
+          <el-select-v2
+            v-model="currentAccount"
+            @change="selectAccount"
+            :options="accountOptions()"
+            style="width: 250px"
+          />
         </el-form-item>
       </el-form>
       <el-button @click="openSettings">管理</el-button>
@@ -31,7 +29,7 @@
 
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const instances = ref()
 const status = ref()
@@ -39,6 +37,7 @@ const accounts = ref()
 const currentInstance = ref()
 const currentAccount = ref()
 const loading = ref(false)
+const proxyEnabled = ref(false)
 
 const loadInstances = function () {
   chrome.runtime.sendMessage({
@@ -73,9 +72,18 @@ const loadAccounts = () => {
     accounts.value = res
   })
 }
+const loadProxyStatus = () => {
+  chrome.runtime.sendMessage({
+    command: 'proxyStatus'
+  }, res => {
+    console.log('proxy status', res)
+    proxyEnabled.value = res
+  })
+}
 onMounted(loadInstances)
 onMounted(loadStatus)
 onMounted(loadAccounts)
+onMounted(loadProxyStatus)
 
 const selectAccount = (id: any) => {
   loading.value = true
@@ -107,6 +115,42 @@ const accountName = (account: any) => {
 }
 const openSettings = () => {
   chrome.runtime.openOptionsPage()
+}
+
+watch(proxyEnabled, (val) => {
+  console.log('proxy enabled changed', val)
+  chrome.runtime.sendMessage({
+    command: 'proxyStatus'
+  }, res => {
+    if (val !== res) {
+      chrome.runtime.sendMessage({
+        command: val ? 'enableProxy' : 'disableProxy'
+      })
+    }
+  })
+})
+
+const instanceOptions = () => {
+  if (!instances.value) {
+    return []
+  }
+  return instances.value.map((item: any) => {
+    return {
+      label: item.note,
+      value: item.ID
+    }
+  })
+}
+const accountOptions = () => {
+  if (!accounts.value) {
+    return []
+  }
+  return accounts.value.map((item: any) => {
+    return {
+      label: accountName(item),
+      value: item.ID
+    }
+  })
 }
 </script>
 

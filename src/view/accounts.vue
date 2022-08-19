@@ -2,7 +2,6 @@
     <div class="accounts-tab">
         <el-table :data="accounts">
             <el-table-column prop="ID" label="ID" />
-            <el-table-column prop="instance.note" label="实例" />
             <el-table-column prop="email" label="Email" />
             <el-table-column prop="note" label="备注" />
             <el-table-column>
