@@ -13,7 +13,7 @@
               <el-descriptions-item v-if="instance.mode === 'STANDALONE'" label="地址" :span="2">{{instance.project}}</el-descriptions-item>
               <el-descriptions-item label="备注" :span="2">{{instance.note}}</el-descriptions-item>
             </el-descriptions>
-            <el-button type="danger" @click="deleteInstance">删除</el-button>
+            <el-button type="danger" @click="deleteInstance(instance.ID)">删除</el-button>
           </el-card>
         </el-col>
       </el-row>
